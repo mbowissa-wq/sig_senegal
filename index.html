@@ -137,10 +137,17 @@
         .right-panel.open {
             transform: translateX(-300px);
         }
+        
         </style>
         <title>CARTO WEB LIMITES ADMINISTRATIVES DU SÉNÉGAL</title>
     </head>
     <body>
+        <div id="welcome-panel" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 1px solid #ccc; z-index: 2001; max-height: 80vh; overflow-y: auto; width: 80%; max-width: 500px; text-align: center;">
+            <h4>Bienvenue sur la carte interactive des divisions administratives du Sénégal</h4>
+            <p>Découvrez l’organisation administrative du territoire sénégalais à travers une cartographie claire et interactive.</p>
+            <p>Cette application est destinée à l’apprentissage, à la recherche et à l’aide à la décision.</p>
+            <button onclick="document.getElementById('welcome-panel').style.display='none';" style="margin-top: 10px;">Commencer</button>
+        </div>
         <div id="navbar">
             <span class="navbar-brand">SIG Sénégal</span>
             <nav>
@@ -148,7 +155,7 @@
                 <a class="nav-link" id="catalog">Catalogue des données</a>
                 <div class="dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="queryDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Requête ▼
+                        Requête
                     </a>
                     <div class="dropdown-menu" aria-labelledby="queryDropdown">
                         <a class="dropdown-item" href="#" id="spatial-query">Requête spatiale</a>
@@ -157,7 +164,7 @@
                 </div>
                 <div class="dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="downloadDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Télécharger ▼
+                        Télécharger
                     </a>
                     <div class="dropdown-menu" aria-labelledby="downloadDropdown">
                         <a class="dropdown-item" href="#" id="download-csv">Télécharger CSV</a>
@@ -261,7 +268,7 @@
         }
         var map = L.map('map', {
             zoomControl:false, maxZoom:25, minZoom:1
-        })
+        }).setView([14.7, -14.7], 7);
         var hash = new L.Hash(map);
         map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
         var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
@@ -1200,7 +1207,6 @@
             var content = document.getElementById('legend-content');
             content.style.display = content.style.display === 'none' ? 'block' : 'none';
         }
-        setBounds();
         miniMap.addTo(map);
         var i = 0;
         layer_Region_1.eachLayer(function(layer) {
@@ -1227,6 +1233,10 @@
         });
         // Navbar actions
         document.getElementById('home').addEventListener('click', function() {
+            var welcomePanel = document.getElementById('welcome-panel');
+            if (welcomePanel) {
+                welcomePanel.style.display = 'block';
+            }
             setBounds(); // Go to initial view
         });
         document.getElementById('catalog').addEventListener('click', function() {
