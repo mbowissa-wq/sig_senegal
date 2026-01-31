@@ -7,6 +7,7 @@
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="manifest" href="js/manifest.json">
         <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
         <link rel="stylesheet" href="css/L.Control.Locate.min.css">
         <link rel="stylesheet" href="css/qgis2web.css">
@@ -175,6 +176,7 @@
                 <a class="nav-link" id="print">Impression</a>
                 <a class="nav-link" id="about">À propos</a>
                 <input type="text" id="search" placeholder="Recherche rapide" style="margin-left: 10px; padding: 2px 5px; font-size: 12px; width: 150px;">
+                <a class="nav-link" id="locate-me" title="Me localiser"><i class="fas fa-map-marker-alt"></i></a>
             </nav>
             <div id="navbar-tools">
                 <a class="nav-link" id="measure">Mesure</a>
@@ -337,7 +339,16 @@
             position: 'topright'
         }).addTo(map);
         L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
-        var measureControl = new L.Control.Measure({
+        
+        // Geolocation button in navbar
+        var locateControl = L.control.locate({
+            position: 'topleft',
+            strings: {
+                title: "Me localiser"
+            }
+        }).addTo(map);
+
+         var measureControl = new L.Control.Measure({
             position: 'topright',
             primaryLengthUnit: 'meters',
             secondaryLengthUnit: 'kilometers',
@@ -1374,6 +1385,10 @@
                     }
                 });
             }
+        });
+
+        document.getElementById('locate-me').addEventListener('click', function() {
+            locateControl.start();
         });
         </script>        
     </body>
