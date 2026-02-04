@@ -6,8 +6,9 @@
         <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="theme-color" content="#343a40">
+        <link rel="manifest" href="manifest.json">
         <link rel="stylesheet" href="css/leaflet.css">
-        <link rel="manifest" href="js/manifest.json">
         <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
         <link rel="stylesheet" href="css/L.Control.Locate.min.css">
         <link rel="stylesheet" href="css/qgis2web.css">
@@ -138,6 +139,47 @@
         .right-panel.open {
             transform: translateX(-300px);
         }
+
+        @media (max-width: 768px) {
+            #navbar {
+                flex-wrap: wrap;
+                padding: 10px 5px;
+                height: auto;
+            }
+            #navbar nav {
+                order: 1;
+                width: 100%;
+                justify-content: center;
+                margin-top: 10px;
+                flex-wrap: wrap;
+            }
+            #navbar .navbar-brand {
+                width: 100%;
+                text-align: center;
+                margin-bottom: 10px;
+            }
+            #navbar .nav-link {
+                font-size: 12px;
+                margin: 5px;
+            }
+            #search {
+                display: none; /* Hide search bar in nav for more space */
+            }
+            .toggle-btn {
+                font-size: 12px;
+                padding: 8px;
+            }
+            #map {
+                height: 100vh; /* Make map full height */
+            }
+            #navbar {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 1001; /* Ensure navbar is on top of the map */
+            }
+        }
         
         </style>
         <title>CARTO WEB LIMITES ADMINISTRATIVES DU SÉNÉGAL</title>
@@ -175,6 +217,7 @@
 
                 <a class="nav-link" id="print">Impression</a>
                 <a class="nav-link" id="about">À propos</a>
+                <a class="nav-link" id="install-app" style="display: none; cursor: pointer;">Installer</a>
                 <input type="text" id="search" placeholder="Recherche rapide" style="margin-left: 10px; padding: 2px 5px; font-size: 12px; width: 150px;">
                 <a class="nav-link" id="locate-me" title="Me localiser"><i class="fas fa-map-marker-alt"></i></a>
             </nav>
@@ -338,7 +381,6 @@
         var zoomControl = L.control.zoom({
             position: 'topright'
         }).addTo(map);
-        L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
         
         // Geolocation button in navbar
         var locateControl = L.control.locate({
@@ -1390,6 +1432,40 @@
         document.getElementById('locate-me').addEventListener('click', function() {
             locateControl.start();
         });
+
+        // PWA Installation
+        let deferredPrompt;
+        const installButton = document.getElementById('install-app');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installButton.style.display = 'block';
+        });
+
+        installButton.addEventListener('click', (e) => {
+            installButton.style.display = 'none';
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                } else {
+                    console.log('User dismissed the install prompt');
+                }
+                deferredPrompt = null;
+            });
+        });
         </script>        
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('./sw.js').then(registration => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    }).catch(error => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+                });
+            }
+        </script>
     </body>
 </html>
